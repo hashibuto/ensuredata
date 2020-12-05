@@ -38,7 +38,6 @@ class DefinitionRegistry {
     const inst = new dataDefinitionType();
 
     if (inst.typeKey !== null && inst.typeName === null) {
-      console.log("Found base class")
       // If the instance has a typeKey declared but no type name, we know this is an inherited
       // base class being registered.  Make a record of the base class, so that message type
       // can be mapped to an instance
@@ -49,7 +48,6 @@ class DefinitionRegistry {
       DefinitionRegistry.BASE_CLASSES.push(dataDefinitionType);
       DefinitionRegistry.BASE_INSTANCE_BY_NAME[typeName] = inst;
     } else if (inst.typeKey !== null && inst.typeName !== null) {
-      console.log("Found subclass")
       // If a type key and type name is available, then this is an implemenation of a common
       // subclass.  We have to ensure that it has already been registered.
 
@@ -70,7 +68,7 @@ class DefinitionRegistry {
 
       // Set up the validator mapping
       const baseInst = DefinitionRegistry.BASE_INSTANCE_BY_NAME[baseClass.name];
-      assert(baseInst.typeKey === definition[inst.typeKey], 'The .typeKey property must not be overridden more than once');
+      assert(baseInst.typeKey === inst.typeKey, 'The .typeKey property must not be overridden more than once');
       try {
         baseInst.definition[baseInst.typeKey].test(inst.typeName);
       } catch(e) {
@@ -81,7 +79,6 @@ class DefinitionRegistry {
         throw e;
       }
 
-      console.log(baseClass.name)
       DefinitionRegistry.BASE_MAPPING_TO_IMPLEMENTATION[baseClass.name][inst.typeName] = inst;
     }
   }
@@ -136,8 +133,6 @@ class DefinitionRegistry {
     }
 
     const validatorMapping = DefinitionRegistry.BASE_MAPPING_TO_IMPLEMENTATION[dataDefName];
-    console.log(validatorMapping);
-    console.log(DefinitionRegistry.BASE_MAPPING_TO_IMPLEMENTATION)
     const dataTypeName = data[dataDefinitionInst.typeKey];
     if (!(dataTypeName in validatorMapping)) {
       throw new ValidationError(null, `object is not a known subtype of ${dataDefName}`, data);

@@ -1,9 +1,10 @@
 const AbstractDataDefinition = require('../src/AbstractDataDefinition');
 const IntType = require("../src/types/IntType");
+const FloatType = require("../src/types/FloatType");
 const EnumType = require("../src/types/EnumType");
 const ArrayType = require('../src/types/ArrayType');
 const DefinitionRegistry = require('../src/DefinitionRegistry');
-const { FloatType } = require('../src');
+const assert = require('assert');
 
 class WeaponTypeEnum extends EnumType {
   static LASER_GUN = 'LASER_GUN';
@@ -74,6 +75,10 @@ class BattleBotDef extends RobotDef {
     }
   }
 
+  get typeName() {
+    return RobotTypeEnum.BATTLE_BOT;
+  }
+
 }
 
 // Register the subclass
@@ -90,6 +95,10 @@ class MechanicBotDef extends RobotDef {
       ...super.definition,
       ...MechanicBotDef.DEFINITION,
     }
+  }
+
+  get typeName() {
+    return RobotTypeEnum.MECHANIC_BOT;
   }
 
 }
@@ -113,6 +122,5 @@ describe("Test definition inheritance and concrete type determination", () => {
     const validated = new RobotDef().test(obj);
     assert(validated.weapons !== undefined);
     assert(validated.weapons.length === obj.weapons.length);
-    console.log(validated);
   })
 });
