@@ -148,3 +148,116 @@ Consider a simple a RESTful web service handler that has a `PUT` and a `POST` ha
 In the `post` method, the validator's `.test` is invoked with a second argument (for `isCreate` as `true`).  That means this is an entity create request, and we should not consider or include any keys which have `.onlyAfterCreate()` as part of the validator.
 
 In the `put` method, we invoke the same `.test` method with the second argument as `false`, indicating that it's not a create operation, and all validators should be considered.  This allows objects being created to omit certain data which is only available after creation, but enforces that it is present during other operations such as update.
+
+## Nested user defined data
+The user defined data validators are not limited to single objects with flat key/value pairs.  Objects can be deeply nested and the entire tree validated with a single call.  Consider this example of groups of people:
+
+```
+  class PersonDef extends AbstractDataDefinition {
+
+    static DEFINITION = {
+      firstName: new StringType().maxLength(25).trim(),
+      lastName: new StringType().maxLength(25).trim(),
+      age: new IntType(),
+    }
+
+    get definition() {
+      return PersonDef.DEFINITION;
+    }
+
+  }
+```
+
+Above, we've defined a validator for a person, which has 3 attributes, a first name, last name, and age.
+
+```
+  class GroupDef extends AbstractDataDefinition {
+
+    static DEFINITION = {
+      name: new StringType().minLength(3).maxLength(25).trim(),
+      members: new ArrayType().maxLength(10).ofType(new PersonDef()),
+    }
+
+    get definition() {
+      return GroupDef.DEFINITION;
+    }
+
+  }
+```
+Next, we've defined a validator for a group, which has a name, and contains a number of members, each of which must be a person (validated by the `PersonDef` validator).
+
+```
+  class SeminarDef extends AbstractDataDefinition {
+
+    static DEFINITION = {
+      groups: new ArrayType().ofType(new GroupDef),
+    }
+
+    get definition() {
+      return SeminarDef.DEFINITION;
+    }
+
+  }
+```
+
+Finally we declare one more definition, which will be used to validate a collection of groups.  Below is how a sample piece of data would look, and how validation would be invoked:
+
+```
+  const sample = {
+    groups: [
+      {
+        name: "Red Team",
+        members: [
+          {
+            firstName: "Sandy",
+            lastName: "Mitchell",
+            age: 42
+          },
+          {
+            firstName: "Arthur",
+            lastName: "Fasbender",
+            age: 49
+          },
+          {
+            firstName: "Roger",
+            lastName: "Dalton",
+            age: 37
+          }
+        ]
+      },
+      {
+        name: "Blue Team",
+        members: {
+          {
+            firstName: "Wendy",
+            lastName: "Feng",
+            age: 38
+          },
+          {
+            firstName: "Rick",
+            lastName: "Roll",
+            age: 29
+          },
+          {
+            firstName: "Lester",
+            lastName: "Holiday",
+            age: 57
+          }
+        }
+      }
+    ]
+  }
+
+  try {
+    const validatedSample = new SeminarDef().test(sample);
+  } except(e) {
+    if (e instanceof ValidationError) {
+      console.error("Oops, validation failed!)
+    }
+
+    throw e;
+  }
+
+```
+
+The `SeminarDef`'s test method, will iterate its own definition and invoke the appropriate validator at each key, or recursively apply another definition's test method.  The end result will be either a fully validated object (`validatedSample` above), or a thrown `ValidationError`.
