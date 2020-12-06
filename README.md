@@ -1,5 +1,5 @@
 # EnsureData
-Provides a toolkit for validation of user defined messages, suitable for both client and server side use.
+Provides a toolkit for validation of user defined messages, suitable for both client and server side use.  EnsureData was originally developed to provide robust data validation for our web service framework [Layer8](https://www.npmjs.com/layer8)
 
 ## Philosophy
 Data validation is of the upmost importance, when it comes to securing web services.  EnsureData provides a simple but robust data definition mechanism which ensures that only compliant data ever gets processed.
