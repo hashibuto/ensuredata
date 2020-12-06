@@ -1,7 +1,7 @@
 {
   "name": "ensuredata",
   "version": "1.0.0",
-  "description": "Validation for user defined data (client and server)",
+  "description": "Highly versatile but easy to use data validation for both server and client",
   "main": "./src/index.js",
   "scripts": {
     "test": "mocha"
@@ -13,7 +13,8 @@
   "keywords": [
     "data",
     "validation",
-    "messages"
+    "messages",
+    "inheritance"
   ],
   "author": "Philip Stefou",
   "license": "GNU GPL",
