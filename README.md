@@ -261,3 +261,143 @@ Finally we declare one more definition, which will be used to validate a collect
 ```
 
 The `SeminarDef`'s test method, will iterate its own definition and invoke the appropriate validator at each key, or recursively apply another definition's test method.  The end result will be either a fully validated object (`validatedSample` above), or a thrown `ValidationError`.
+
+## Inheritance in validators
+Inheritance in validators goes beyond simple class extension.  In particular, a common use case may be to validate an object which derives from a common type, but the the specific type is not known until the object is validated.  In this case, it's essential to be able to declare a validator, which is the base class, and have the validation logic handed off to the specific implementation after it has been determined.  EnsureData solves this inheritance problem through class registration, which tracks what subclasses are available for a given base class, and of which a specific class is chosen based on the message type.
+
+The `AbstractDataDefinition` class has 2 special propery getters for inheritance.  They are `typeKey` and `typeName`.
+
+`typeKey`, when overridden, returns a key on a given object, which is used to determine the type of object.  The type itself must belong to an enumeration (subclass of `EnumType`).  A base class validator must implement its own `typeKey`, and objects to be validated must bear that key/value pair.  For instance, if `typeKey === 'type'`, then the target object must look something like this:
+
+```
+{
+  ...,
+  type: "MY_OBJECT_TYPE",
+}
+```
+
+`typeName` is the property which must be overridden on the concrete class.  This returns the object type which is represented by the class.  Using the example above, `typeName` would return `"MY_OBJECT_TYPE"` on one concrete implementation of the base class.  The base class however, must return `null` for `typeName`.
+
+Below is a simple example using a single base class and 2 concrete subclasses:
+
+```
+  class ShapeEnumDef extends EnumType {
+
+    static RECTANGLE = 'RECTANGLE';
+    static CIRCLE = 'CIRCLE';
+
+    static COLLECTION = [
+      ShapeEnumDef.RECTANGLE,
+      ShapeEnumDef.CIRCLE,
+    ];
+
+    get collection() {
+      return ShapeEnumDef.COLLECTION;
+    }
+
+  }
+
+  class ShapeDef extends AbstractDataDefinition {
+
+    static DEFINITION = {
+      centerX: new IntType(),
+      centerY: new IntType(),
+      type: new ShapeEnumDef(),
+    }
+
+    get definition() {
+      return ShapeDef.DEFINITION;
+    }
+
+    get typeKey() {
+      return 'type';
+    }
+
+  }
+
+  DefinitionRegistry.register(ShapeDef);
+
+  class CircleDef extends ShapeDef {
+
+    static DEFINITION = {
+      radius: new IntType().from(1),
+    }
+
+    get definition() {
+      return {
+        ...super.definition,
+        ...CircleDef.DEFINITION,
+      }
+    }
+
+    get typeName() {
+      return ShapeEnumDef.CIRCLE;
+    }
+
+  }
+
+  DefinitionRegistry.register(CircleDef);
+
+  class RectangleDef extends ShapeDef {
+
+    static DEFINITION = {
+      width: new IntType().from(1),
+      height: new IntType().from(1),
+    }
+
+    get definition() {
+      return {
+        ...super.definition,
+        ...RectangleDef.DEFINITION,
+      }
+    }
+
+    get typeName() {
+      return ShapeEnumDef.RECTANGLE;
+    }
+
+  }
+
+  DefinitionRegistry.register(RectangleDef);
+```
+
+You will notice above that we've defined 3 classes.  The base class is `ShapeDef` which implements the `typeKey` property.  We also notice that `ShapeDef`'s definition has a key called `'type'`, which points to an enum validator.
+
+Next you'll notice that there are 2 shapes which extend `ShapeDef`.  Each of them implement their own `typeName`, which identifies them using names from the enum `ShapeEnumDef`.
+
+We also register each of the three classes involved, using `DefinitionRegistry.register()`.  This helps to establish the relationship between the classes so that we can validate data as follows:
+```
+const sample = {
+  shapes: [
+    {
+      type: "CIRCLE",
+      centerX: 10,
+      centerY: 11,
+      radius: 15
+    },
+    {
+      type: "RECTANGLE",
+      centerX: 22,
+      centerY: -1,
+      width: 10,
+      height: 20
+    }
+  ]
+}
+
+class ObjValidatorDef {
+
+  static DEFINITION = {
+    shapes: new ArrayType().ofType(new ShapeDef())
+  }
+
+  get definition() {
+    return ObjValidatorDef.DEFINITION;
+  }
+
+}
+
+const validatedObj = new ObjValidatorDef().test(sample);
+```
+
+In the example above, we did not need to explicitly list all the validators involved in validating any of the shapes in the array.  It was enough to use the `ShapeDef` in the `ArrayType` validator.  Internally the `ShapeDef` would pick based on the `type` key, which concrete validator to use to carry out the rest of the validation.  Note: we did not need to register `ObjValidatorDef`.  Only validators which employ inheritance during validation need to be registered.
