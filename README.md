@@ -153,6 +153,13 @@ In the `put` method, we invoke the same `.test` method with the second argument 
 The user defined data validators are not limited to single objects with flat key/value pairs.  Objects can be deeply nested and the entire tree validated with a single call.  Consider this example of groups of people:
 
 ```
+  const {
+    AbstractDataDefinition,
+    StringType,
+    IntType,
+    ArrayType,
+  } = require('ensuredata');
+
   class PersonDef extends AbstractDataDefinition {
 
     static DEFINITION = {
@@ -281,6 +288,14 @@ The `AbstractDataDefinition` class has 2 special propery getters for inheritance
 Below is a simple example using a single base class and 2 concrete subclasses:
 
 ```
+  const {
+    AbstractDataDefinition,
+    EnumType,
+    IntType,
+    ArrayType,
+    DefinitionRegistry,
+  } = require('ensuredata');
+
   class ShapeEnumDef extends EnumType {
 
     static RECTANGLE = 'RECTANGLE';
