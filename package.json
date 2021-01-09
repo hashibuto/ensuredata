@@ -1,10 +1,11 @@
 {
   "name": "ensuredata",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Highly versatile but easy to use data validation for both server and client",
-  "main": "./src/index.js",
+  "main": "dist/ensuredata.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,13 @@
   ],
   "author": "Philip Stefou",
   "license": "GNU GPL",
-  "dependencies": {
-    "lodash": "^4.17.20",
-    "mocha": "^8.2.1"
-  }
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "babel-loader": "^8.2.2",
+    "mocha": "^8.2.1",
+    "webpack": "^5.12.1",
+    "webpack-cli": "^4.3.1"
+  },
+  "dependencies": {}
 }
