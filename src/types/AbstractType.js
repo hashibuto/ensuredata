@@ -136,6 +136,16 @@ class AbstractType {
   }
 
   /**
+   * Returns the empty value represented by the data type.
+   *
+   * @readonly
+   * @memberof AbstractType
+   */
+  get empty() {
+    throw NotImplementedError();
+  }
+
+  /**
    * Performs pre-processing of value as though it were to be reinterpreted from a string object.
    *
    * @param {*} value - The string value to be processed

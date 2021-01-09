@@ -144,6 +144,10 @@ class ArrayType extends AbstractType {
       throw new ValidationError(null, 'could not be parsed from string', value);
     }
   }
+
+  get empty() {
+    return [];
+  }
 }
 
 module.exports = ArrayType;

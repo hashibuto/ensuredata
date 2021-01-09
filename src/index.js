@@ -10,4 +10,5 @@ module.exports = {
   AbstractDataDefinition: require('./AbstractDataDefinition'),
   ValidationError: require('./errors/ValidationError'),
   DefinitionRegistry: require('./DefinitionRegistry'),
+  FormDefinition: require('./FormDefinition'),
 }

@@ -39,6 +39,10 @@ class IntType extends FloatType {
   fromString(value) {
     return parseInt(value);
   }
+
+  get empty() {
+    return 0;
+  }
 }
 
 module.exports = IntType;

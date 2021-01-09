@@ -74,6 +74,10 @@ class StringType extends ArrayType {
   fromString(value) {
     return value;
   }
+
+  get empty() {
+    return "";
+  }
 }
 
 module.exports = StringType;

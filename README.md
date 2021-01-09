@@ -104,6 +104,31 @@ The `StringType` validator is used to validate strings.  The following rules are
 - `.maxLength(x)` - Ensures a maximum string length of `x` characters.
 - `.trim()` - Ensures that string is trimmed of leading and trailing whitespace prior to enforcement of other validation rules.  This means that an untrimmed string will be stripped of whitespace (trailing and leading) by the validator.  A trimmed verison of the string will also be returned by the `.test` method.
 
+## Validating form data
+Forms can be defined and initialized as follows:
+```
+  const { FormDefinition, StringType } = require('ensuredata');
+
+  const formDef = new FormDefinition({
+    firstName: new StringType().minLength(3),
+    lastName: new StringType().minLength(3).maxLength(10),
+    favoriteColor = new StringType('orange'),
+  });
+
+  const myForm = formDef.initialize();
+```
+
+In the example above, the key defines the form field, and the value defines a validator.  The default
+value for each validator represents the initial value in the form.  If a default is not specified, the
+empty value for a given data type will be used.  In the case of `StringType`, it's simply an empty string.
+
+Forms are validated like this:
+```
+  const errors = formDef.getErrors(myForm);
+  const isValid = (Object.keys(errors).length === 0);
+```
+Errors is an object and will contain a key/value pair for each form item that fails validation.  The value will be the failure message.  In order to avoid processing the form twice, there is no explicit call that returns a `boolean` type.
+
 ## User defined object validation
 This is where EnsureData really shines.  On the server side in particular, it is essential to be able to validate data passed from the client, whether it be entities for creation/modification or any other type of data.  User defined data is defined using the `AbstractDataDefinition` class.  The following simple example will illustrate validator for validating a job entity.
 

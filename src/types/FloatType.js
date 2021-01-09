@@ -87,6 +87,10 @@ class FloatType extends AbstractType {
   fromString(value) {
     return parseFloat(value);
   }
+
+  get empty() {
+    return 0;
+  }
 }
 
 module.exports = FloatType;
