@@ -1,7 +1,6 @@
 const assert = require('assert');
 const AbstractType = require('./types/AbstractType');
 const ValidationError = require('./errors/ValidationError');
-const { exception } = require('console');
 
 class FormDefinition {
 
