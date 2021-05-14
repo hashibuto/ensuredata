@@ -65,6 +65,7 @@ class AbstractType {
    * Executes a custom validator, which takes the test data as its only argument.
    *
    * @param {function} customValidator
+   * @returns {AbstractType}
    * @memberof AbstractType
    */
   custom(customValidator) {
@@ -93,6 +94,10 @@ class AbstractType {
       } else {
         value = this.defaultVal;
       }
+    }
+
+    if (this._customValidator !== null) {
+      value = this._customValidator(value);
     }
 
     return value;
