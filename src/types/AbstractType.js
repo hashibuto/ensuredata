@@ -64,13 +64,14 @@ class AbstractType {
   /**
    * Executes a custom validator, which takes the test data as its only argument.
    *
-   * @param {function} customValidator
+   * @param {function} cv - Custom validator function which takes value as an argument
    * @returns {AbstractType}
    * @memberof AbstractType
    */
-  custom(customValidator) {
+  customValidate(cv) {
+    assert(this._customValidator === null);
     // No validation rule text associated with custom validators.
-    this._customValidator = customValidator;
+    this._customValidator = cv;
 
     return this;
   }
