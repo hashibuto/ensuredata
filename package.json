@@ -1,6 +1,6 @@
 {
   "name": "ensuredata",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Highly versatile but easy to use data validation for both server and client",
   "main": "dist/ensuredata.js",
   "scripts": {

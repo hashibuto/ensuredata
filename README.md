@@ -47,6 +47,7 @@ The `AbstractType` exposes some basic validation rules, including the default va
 
 - `.onlyAfterCreate()` - Validator does not apply during object creation (this use case will become more apparent when we delve into object validation).
 - `.nullable()` - Allows data to be set to `null`.
+- `.custom(validator)` - Receives a function in the form of `f(v)` which can perform any custom validation logic, returning the target value or throwing an exception.  This is useful for adding arbitrary rules to a standard validator.
 
 ### Validating arrays
 The `ArrayType` validator is used to validate arrays.  The following rules are available:

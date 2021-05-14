@@ -84,4 +84,16 @@ describe("Test StringType", () => {
     const type = new StringType();
     assert(type.test(type.fromString('hello')) === 'hello');
   });
+
+  it('Must process custom validators', () => {
+    const type = new StringType().custom((v) => {if (v == "123456") throw ValidationError("Can't be 123456")})
+    assert(type.test(type.fromString('hello')) === 'hello');
+    try {
+      type.text("123456")
+    } catch(e) {
+      if (e instanceof ValidationError) {
+        return;
+      }
+    }
+  });
 });

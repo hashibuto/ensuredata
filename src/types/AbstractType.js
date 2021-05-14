@@ -19,6 +19,7 @@ class AbstractType {
    * @memberof AbstractType
    */
   constructor(defaultVal=undefined) {
+    this._customValidator = null;
     this._lowerBound = null;
     this._upperBound = null;
     this._isNullable = false;
@@ -56,6 +57,19 @@ class AbstractType {
     assert(this._isNullable === false);
     this._isNullable = true;
     this._rules.push('is nullable');
+
+    return this;
+  }
+
+  /**
+   * Executes a custom validator, which takes the test data as its only argument.
+   *
+   * @param {function} customValidator
+   * @memberof AbstractType
+   */
+  custom(customValidator) {
+    // No validation rule text associated with custom validators.
+    this._customValidator = customValidator;
 
     return this;
   }
